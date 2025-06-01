@@ -1,7 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
+const countryStates = {
+  Indonesia: ["Jakarta", "Bali", "Yogyakarta", "Bandung"],
+  Malaysia: ["Kuala Lumpur", "Penang", "Johor", "Sabah"],
+  India: ["Punjab", "Maharashtra", "Karnataka", "Tamil Nadu"],
+  Japan: ["Tokyo", "Osaka", "Kyoto", "Hokkaido"],
+  SouthKorea: ["Seoul", "Busan", "Incheon", "Daegu"],
+  Thailand: ["Bangkok", "Chiang Mai", "Phuket", "Pattaya"],
+  Vietnam: ["Hanoi", "Ho Chi Minh", "Da Nang", "Haiphong"],
+  China: ["Beijing", "Shanghai", "Guangzhou", "Shenzhen"],
+  Philippines: ["Manila", "Cebu", "Davao", "Quezon City"],
+  Singapore: ["Singapore"],
+};
+
 const Checkout = () => {
   const state = useSelector((state) => state.handleCart);
 
@@ -31,6 +45,17 @@ const Checkout = () => {
     state.map((item) => {
       return (totalItems += item.qty);
     });
+
+    //list country
+
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [states, setStates] = useState([]);
+
+    const handleCountryChange = (event) => {
+      const country = event.target.value;
+      setSelectedCountry(country);
+      setStates(countryStates[country] || []);
+    };
     return (
       <>
         <div className="container py-5">
@@ -43,7 +68,8 @@ const Checkout = () => {
                 <div className="card-body">
                   <ul className="list-group list-group-flush">
                     <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                      Products ({totalItems})<span>${Math.round(subtotal)}</span>
+                      Products ({totalItems})
+                      <span>${Math.round(subtotal)}</span>
                     </li>
                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                       Shipping
@@ -152,9 +178,17 @@ const Checkout = () => {
                           Country
                         </label>
                         <br />
-                        <select className="form-select" id="country" required>
-                          <option value="">Choose...</option>
-                          <option>India</option>
+                        <select
+                          className="form-select"
+                          id="country"
+                          onChange={handleCountryChange}
+                          required
+                        >
+                          {Object.keys(countryStates).map((country) => (
+                            <option key={country} value={country}>
+                              {country}
+                            </option>
+                          ))}
                         </select>
                         <div className="invalid-feedback">
                           Please select a valid country.
@@ -167,8 +201,11 @@ const Checkout = () => {
                         </label>
                         <br />
                         <select className="form-select" id="state" required>
-                          <option value="">Choose...</option>
-                          <option>Punjab</option>
+                          {states.map((state) => (
+                            <option key={state} value={state}>
+                              {state}
+                            </option>
+                          ))}
                         </select>
                         <div className="invalid-feedback">
                           Please provide a valid state.
@@ -177,7 +214,7 @@ const Checkout = () => {
 
                       <div className="col-md-3 my-1">
                         <label for="zip" className="form-label">
-                          Zip
+                          code pos
                         </label>
                         <input
                           type="text"
@@ -269,7 +306,8 @@ const Checkout = () => {
 
                     <button
                       className="w-100 btn btn-primary "
-                      type="submit" disabled
+                      type="submit"
+                      disabled
                     >
                       Continue to checkout
                     </button>
